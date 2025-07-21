@@ -12,7 +12,8 @@ export default function CommitCard({ commit }: CommitCardProps) {
             <div className="flex items-center space-x-3">
                 <div className="avatar placeholder">
                     <div className="bg-primary-focus text-primary-content rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
-                        {commit.author_name}
+                        <img alt={"profile image"} src={"https://avatars.githubusercontent.com/u/128643203?v=4"}></img>
+
                     </div>
                 </div>
                 <div>
