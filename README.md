@@ -1,5 +1,5 @@
 # Quackstream
-<hr />
+
 This is a tool i wrote for a Hackathon at my School, which i helped organize. The Tool is general purpose for any hackathon that wants to display their hackers commits live as a nice gimmick.
 
 ## Setup
