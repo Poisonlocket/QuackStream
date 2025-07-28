@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quackstream
+<hr />
+This is a tool i wrote for a Hackathon at my School, which i helped organize. The Tool is general purpose for any hackathon that wants to display their hackers commits live as a nice gimmick.
 
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Setup
+### As a Developer or Organizer
+1. Ensure Docker is installed, otherwise install it first.
+2. get the docker Image 
+```shell
+  docker pull ghcr.io/poisonlocket/quackstream:latest
 ```
+3. Run the image, port 8000 is exposed for the backend, port 3000 for the frontend
+```shell
+  docker run -itd -p 3000:3000 -p 8000:8000 ghcr.io/poisonlocket/quackstream:latest 
+```
+4. Ensure that your endpoints are available on the public internet and on different domains, for testing i recommend the npm package localtunnel. 
+5. Tell all the repository owners to use the participant setup guide to integrate their repositorys with Quackstream via Github Webhooks and provide them with the domain where the backend of the service is hosted, while they are doing this take a quick break and get some coffee or feed the rubber ducks at your local desk.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### As a Participant and Repository Owner
+1. Go into your repository Settings and Select Webhooks
+2. Change the payload url to the provided url by the organizers
+3. Ensure /webhook is at the end of the url, if not add it in to reach the webhook route.
+4. Set the content type to ```application/json``` 
+5. Ensure that https is enabled, the webhook only sends the push event and the webhook is marked active
+6. Update your webhook at the bottom of the page
+7. push something to your repo, you can use the --allow-empty flag for an empty git commit, write a small commit message like ```quacking code now``.
+8. check the recent deliveries tab to see if your webhook was able to deliver the commit data successfully, then check the big screen where the commits are displayed.
+9. You are done and the webhook is setup, go report back to the organizers.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+        ,----,
+   ___.`      `,
+   `===  D     :
+     `'.      .'
+        )    (                   ,
+       /      \_________________/|
+      /                          |
+     |                           ;
+     |               _____       /
+     |      \       ______7    ,'
+     |       \    ______7     /
+      \       `-,____7      ,'   
+^~^~^~^`\                  /~^~^~^~^ #Quack
+  ~^~^~^ `----------------' ~^~^~^
+ ~^~^~^~^~^^~^~^~^~^~^~^~^~^~^~^~
+```

@@ -1,6 +1,5 @@
 import random
 import uuid
-from xml.etree.ElementTree import tostring
 
 from fastapi import FastAPI, Request, WebSocket
 from util.util import serialize_data
