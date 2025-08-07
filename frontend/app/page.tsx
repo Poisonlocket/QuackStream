@@ -78,7 +78,7 @@ export default function Home() {
     }, [pendingMessages, isProcessing.current]);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8000/ws");
+        const ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:8000/ws");
 
         ws.onopen = () => {
             console.log("🦆 WebSocket quacked open!");
