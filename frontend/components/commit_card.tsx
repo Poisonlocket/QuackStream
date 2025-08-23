@@ -24,15 +24,13 @@ function hexWithAlpha(hex: string, alpha: number): string {
 }
 
 // Utility: format time in a human-readable way
-function formatTime(isoString: string): string {
-    const date = new Date(isoString);
+function formatTime(): string {
+    const date = new Date();
     return date.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
     });
+
 }
 
 export default function CommitCard({ commit, color }: CommitCardProps) {
