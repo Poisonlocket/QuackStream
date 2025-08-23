@@ -45,6 +45,7 @@ async def websocket_endpoint(websocket: WebSocket):
             # Keep connection alive, optionally handle incoming messages
             data = await websocket.receive_text()
             print("Received from client:", data)
+            await websocket.send_text("Pong")
     except Exception as e:
         print("WebSocket connection closed:", e)
     finally:

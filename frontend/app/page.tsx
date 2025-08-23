@@ -90,6 +90,10 @@ export default function Home() {
 
         ws.onmessage = (event) => {
             try {
+                if (event.data === "Pong") {
+                    console.log("Pong received");
+                    return;
+                }
                 const data = JSON.parse(event.data);
                 console.log(data);
                 console.log(data.repository_name);
