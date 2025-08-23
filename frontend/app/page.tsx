@@ -92,7 +92,7 @@ export default function Home() {
             try {
                 const data = JSON.parse(event.data);
                 console.log(data);
-                console.log(data.repository);
+                console.log(data.repository_name);
 
                 // Add color based on repo name
                 if (data.repository_name) {
