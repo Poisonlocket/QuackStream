@@ -94,7 +94,7 @@ export default function CommitCard({ commit, color }: CommitCardProps) {
                             #{commit.id}
                         </span>
                         <span className="text-[11px] text-gray-500 font-medium">
-                            {formatTime(commit.timestamp)}
+                            {formatTime()}
                         </span>
                     </div>
                 </div>
