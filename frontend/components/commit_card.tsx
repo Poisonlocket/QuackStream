@@ -8,26 +8,37 @@ interface CommitCardProps {
         repository_name: string;
         avatar_url: string;
         id: string;
+        timestamp: string; // ISO string e.g. "2025-08-23T14:35:00Z"
     };
     color?: string; // hex color like '#4a90e2'
 }
 
 // Utility: add alpha to hex color
 function hexWithAlpha(hex: string, alpha: number): string {
-    // Ensure hex starts with #
     hex = hex.replace('#', '');
     if (hex.length === 3) {
-        // Expand shorthand like #4a9 to #44aa99
         hex = hex.split('').map(c => c + c).join('');
     }
     const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
     return `#${hex}${alphaHex}`;
 }
 
+// Utility: format time in a human-readable way
+function formatTime(isoString: string): string {
+    const date = new Date(isoString);
+    return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 export default function CommitCard({ commit, color }: CommitCardProps) {
-    const accentColor = color ?? '#4a90e2'; // fallback soft blue
-    const accentColorLight = hexWithAlpha(accentColor, 0.12); // ~12% opacity
-    const accentColorDark = hexWithAlpha(accentColor, 0.85); // ~85% opacity
+    const accentColor = color ?? '#4a90e2';
+    const accentColorLight = hexWithAlpha(accentColor, 0.12);
+    const accentColorDark = hexWithAlpha(accentColor, 0.85);
 
     return (
         <motion.div
@@ -72,17 +83,22 @@ export default function CommitCard({ commit, color }: CommitCardProps) {
                             {commit.repository_name}
                         </span>
                     </div>
-                    <span
-                        className="text-xs font-mono font-semibold px-3 py-1 rounded-full"
-                        style={{
-                            backgroundColor: accentColorLight,
-                            color: accentColorDark,
-                            border: `1px solid ${accentColor}`,
-                            userSelect: 'none',
-                        }}
-                    >
-                        #{commit.id}
-                    </span>
+                    <div className="flex flex-col items-end space-y-1">
+                        <span
+                            className="text-xs font-mono font-semibold px-3 py-1 rounded-full"
+                            style={{
+                                backgroundColor: accentColorLight,
+                                color: accentColorDark,
+                                border: `1px solid ${accentColor}`,
+                                userSelect: 'none',
+                            }}
+                        >
+                            #{commit.id}
+                        </span>
+                        <span className="text-[11px] text-gray-500 font-medium">
+                            {formatTime(commit.timestamp)}
+                        </span>
+                    </div>
                 </div>
 
                 <p className="text-gray-700 text-sm leading-relaxed">{commit.commit_description}</p>
