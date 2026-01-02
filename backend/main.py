@@ -1,6 +1,5 @@
 import random
 import uuid
-from xml.etree.ElementTree import tostring
 
 from fastapi import FastAPI, Request, WebSocket
 from util.ws_connection_manager import ConnectionManager
@@ -46,6 +45,7 @@ async def websocket_endpoint(websocket: WebSocket):
             current_ws_index = cm.active_connections.index(ws_client_endpoint)
             data = await cm.active_connections[current_ws_index].receive_text()
             print("Received from client:", data)
+            await websocket.send_text("Pong")
     except Exception as e:
         print("WebSocket connection closed:", e)
     finally:
@@ -53,4 +53,3 @@ async def websocket_endpoint(websocket: WebSocket):
         current_ws = cm.active_connections[current_ws_index]
         await cm.disconnect(current_ws)
         print("WebSocket client disconnected")
-
