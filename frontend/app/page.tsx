@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import CommitCard from "@/components/commit_card";
-import { AnimatePresence, motion } from "framer-motion";
+import {AnimatePresence, motion} from "framer-motion";
 
 // Generate a consistent hex color based on the repo name
 function getColorScheme(repoName: string): string {
@@ -54,28 +54,27 @@ function rgbToHex(r: number, g: number, b: number): string {
 }
 
 export default function Home() {
-    const [messages, setMessages] = useState<any[]>([]);
-    const [pendingMessages, setPendingMessages] = useState<any[]>([]);
+    const [commits, setcommits] = useState<any[]>([]);
+    const [pendingcommits, setPendingcommits] = useState<any[]>([]);
     const isProcessing = useRef(false);
 
-    // Process pending messages with a delay to prevent animation conflicts
+    // Process pending commits with a delay to prevent animation conflicts
     useEffect(() => {
-        if (pendingMessages.length > 0 && !isProcessing.current) {
+        if (pendingcommits.length > 0 && !isProcessing.current) {
             isProcessing.current = true;
-            const nextMessage = pendingMessages[0];
+            const nextMessage = pendingcommits[0];
 
-            setMessages((prev) => {
-                const newMessages = [nextMessage, ...prev].slice(0, 5);
-                return newMessages;
+            setcommits((prev) => {
+                return [nextMessage, ...prev].slice(0, 5);
             });
 
-            setPendingMessages((prev) => prev.slice(1));
+            setPendingcommits((prev) => prev.slice(1));
 
             setTimeout(() => {
                 isProcessing.current = false;
             }, 150);
         }
-    }, [pendingMessages, isProcessing.current]);
+    }, [pendingcommits, isProcessing.current]);
 
     useEffect(() => {
         const ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:8000/ws");
@@ -103,7 +102,7 @@ export default function Home() {
                     data.color = getColorScheme(data.repository_name);
                 }
 
-                setPendingMessages((prev) => [...prev, data]);
+                setPendingcommits((prev) => [...prev, data]);
             } catch (err) {
                 console.error("Error parsing message:", err);
             }
@@ -144,7 +143,7 @@ export default function Home() {
                 <div className="w-full max-w-2xl">
                     <ul className="flex flex-col space-y-4">
                         <AnimatePresence initial={false}>
-                            {messages.length === 0 && (
+                            {commits.length === 0 && (
                                 <motion.li
                                     key="empty"
                                     initial={{ opacity: 0, y: 6, scale: 0.98 }}
@@ -180,9 +179,10 @@ export default function Home() {
                                     </div>
                                 </motion.li>
                             )}
-                            {messages.map((msg, index) => (
+                            {commits.map((commit, index) => (
+
                                 <motion.li
-                                    key={msg.id}
+                                    key={commit.id}
                                     layout
                                     initial={{ opacity: 0, y: 6, scale: 0.98 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -192,10 +192,10 @@ export default function Home() {
                                         ease: [0.4, 0, 0.2, 1],
                                         layout: { duration: 0.16, ease: "easeInOut" }
                                     }}
-                                    style={{ zIndex: messages.length - index }}
+                                    style={{ zIndex: commits.length - index }}
                                 >
                                     <div className="group transition-all duration-200">
-                                        <CommitCard commit={msg} color={msg.color} />
+                                        <CommitCard commit={commit} color={commit.color} />
                                     </div>
                                 </motion.li>
                             ))}

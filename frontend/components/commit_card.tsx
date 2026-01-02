@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 interface CommitCardProps {
     commit: {
         author_name: string;
+        commit_timestamp: Date;
         commit_description: string;
         repository_name: string;
         avatar_url: string;
@@ -24,8 +25,9 @@ function hexWithAlpha(hex: string, alpha: number): string {
 }
 
 // Utility: format time in a human-readable way
-function formatTime(): string {
-    const date = new Date();
+function formatTime(commit_date: Date): string {
+    console.log(commit_date)
+    const date = new Date(commit_date);
     return date.toLocaleString(undefined, {
         hour: '2-digit',
         minute: '2-digit',
@@ -94,7 +96,7 @@ export default function CommitCard({ commit, color }: CommitCardProps) {
                             #{commit.id}
                         </span>
                         <span className="text-[11px] text-gray-500 font-medium">
-                            {formatTime()}
+                            {formatTime(commit.commit_timestamp)}
                         </span>
                     </div>
                 </div>
