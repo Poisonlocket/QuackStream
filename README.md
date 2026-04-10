@@ -17,7 +17,7 @@ This is a tool i wrote for a Hackathon at my School, which i helped organize. Th
 5. Tell all the repository owners to use the participant setup guide to integrate their repositorys with Quackstream via Github Webhooks and provide them with the domain where the backend of the service is hosted, while they are doing this take a quick break and get some coffee or feed the rubber ducks at your local desk.
 
 
-### As a Participant and Repository Owner
+### As a Participant / Team Repository Owner
 1. Go into your repository Settings and Select Webhooks
 2. Change the payload url to the provided url by the organizers
 3. Ensure /webhook is at the end of the url, if not add it in to reach the webhook route.
