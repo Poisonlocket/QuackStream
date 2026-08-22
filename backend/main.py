@@ -1,7 +1,7 @@
 import random
 import uuid
 
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, HTTPException, Request, WebSocket
 from util.ws_connection_manager import ConnectionManager
 from util.util import serialize_data
 
@@ -27,8 +27,7 @@ async def webhook(request: Request):
 
     prepared_json_data = serialize_data(payload)
     if prepared_json_data is None:
-        print("Received webhook payload without commit data, ignoring")
-        return {"status": "ignored"}
+        raise HTTPException(status_code=400, detail="Invalid webhook payload")
 
     print("Received webhook payload:", prepared_json_data)
 
