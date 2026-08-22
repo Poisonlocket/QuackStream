@@ -82,9 +82,7 @@ export default function Home() {
 
         ws.onopen = () => {
             console.log("🦆 WebSocket quacked open!");
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
-            }
+            ws.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
             pingInterval = setInterval(() => {
                 if (ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({ message: "Ping from Quackstream client 🦆" }));
