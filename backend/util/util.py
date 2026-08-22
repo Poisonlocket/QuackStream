@@ -16,7 +16,15 @@ def serialize_data(payload: dict) -> dict | None:
     avatar_url = owner.get("avatar_url")
     profile_url = owner.get("url")
 
-    if not all([commit_description, commit_timestamp, author_name, repository_name]):
+    if any(
+        value is None
+        for value in [
+            commit_description,
+            commit_timestamp,
+            author_name,
+            repository_name,
+        ]
+    ):
         return None
 
     return {
