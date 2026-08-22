@@ -78,12 +78,17 @@ export default function Home() {
 
     useEffect(() => {
         const ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:8000/ws");
+        let pingInterval: NodeJS.Timeout | null = null;
 
         ws.onopen = () => {
             console.log("🦆 WebSocket quacked open!");
-            ws.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
-            setInterval(() => {
-                ws.send(JSON.stringify({ message: "Ping from Quackstream client 🦆" }));
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
+            }
+            pingInterval = setInterval(() => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ message: "Ping from Quackstream client 🦆" }));
+                }
             }, 5000)
         };
 
@@ -116,7 +121,12 @@ export default function Home() {
             console.error("⚠️ WebSocket error:", error);
         };
 
-        return () => ws.close();
+        return () => {
+            if (pingInterval) clearInterval(pingInterval);
+            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+                ws.close();
+            }
+        };
     }, []);
 
     return (
