@@ -1,7 +1,7 @@
 import random
 import uuid
 
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, HTTPException, Request, WebSocket
 from util.ws_connection_manager import ConnectionManager
 from util.util import serialize_data
 
@@ -19,7 +19,16 @@ async def teapot():
 @app.post("/webhook")
 async def webhook(request: Request):
     payload = await request.json()
+
+    # Handle GitHub ping/test event explicitly
+    if payload.get("zen"):
+        print("Received GitHub ping event")
+        return {"status": "pong"}
+
     prepared_json_data = serialize_data(payload)
+    if prepared_json_data is None:
+        raise HTTPException(status_code=400, detail="Invalid webhook payload")
+
     print("Received webhook payload:", prepared_json_data)
 
     # Forward to WebSocket client if connected
@@ -29,7 +38,6 @@ async def webhook(request: Request):
             print("Forwarded webhook to WebSocket client")
         except Exception as e:
             print("Something went wrong", e)
-
 
     return {"status": "ok"}
 
