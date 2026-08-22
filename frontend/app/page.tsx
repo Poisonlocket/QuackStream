@@ -77,52 +77,76 @@ export default function Home() {
     }, [pendingcommits, isProcessing.current]);
 
     useEffect(() => {
-        const ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:8000/ws");
+        let ws: WebSocket | null = null;
         let pingInterval: NodeJS.Timeout | null = null;
+        let reconnectTimeout: NodeJS.Timeout | null = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 10;
+        const reconnectDelay = 3000;
 
-        ws.onopen = () => {
-            console.log("🦆 WebSocket quacked open!");
-            ws.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
-            pingInterval = setInterval(() => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({ message: "Ping from Quackstream client 🦆" }));
+        const connect = () => {
+            ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:8000/ws");
+
+            ws.onopen = () => {
+                console.log("🦆 WebSocket quacked open!");
+                reconnectAttempts = 0;
+                ws?.send(JSON.stringify({ message: "Hello from Quackstream client 🦆" }));
+                pingInterval = setInterval(() => {
+                    if (ws?.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ message: "Ping from Quackstream client 🦆" }));
+                    }
+                }, 5000);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    if (event.data === "Pong") {
+                        console.log("Pong received");
+                        return;
+                    }
+                    const data = JSON.parse(event.data);
+                    console.log(data);
+                    console.log(data.repository_name);
+
+                    // Add color based on repo name
+                    if (data.repository_name) {
+                        data.color = getColorScheme(data.repository_name);
+                    }
+
+                    setPendingcommits((prev) => [...prev, data]);
+                } catch (err) {
+                    console.error("Error parsing message:", err);
                 }
-            }, 5000)
-        };
+            };
 
-        ws.onmessage = (event) => {
-            try {
-                if (event.data === "Pong") {
-                    console.log("Pong received");
-                    return;
+            ws.onclose = () => {
+                console.log("🦆 WebSocket quacked closed!");
+                if (pingInterval) {
+                    clearInterval(pingInterval);
+                    pingInterval = null;
                 }
-                const data = JSON.parse(event.data);
-                console.log(data);
-                console.log(data.repository_name);
-
-                // Add color based on repo name
-                if (data.repository_name) {
-                    data.color = getColorScheme(data.repository_name);
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    console.log(`🦆 Reconnecting in ${reconnectDelay}ms... (attempt ${reconnectAttempts})`);
+                    reconnectTimeout = setTimeout(connect, reconnectDelay);
                 }
+            };
 
-                setPendingcommits((prev) => [...prev, data]);
-            } catch (err) {
-                console.error("Error parsing message:", err);
-            }
+            ws.onerror = (error) => {
+                console.error("⚠️ WebSocket error:", error);
+            };
         };
 
-        ws.onclose = () => {
-            console.log("🦆 WebSocket quacked closed!");
-        };
-
-        ws.onerror = (error) => {
-            console.error("⚠️ WebSocket error:", error);
-        };
+        connect();
 
         return () => {
             if (pingInterval) clearInterval(pingInterval);
-            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-                ws.close();
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+            if (ws) {
+                ws.onclose = null;
+                if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+                    ws.close();
+                }
             }
         };
     }, []);
